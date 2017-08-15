@@ -77,7 +77,7 @@ module.exports = {
         for (var i = 0; i < maxDrops; i++) {
             drops.push({
                 x: Math.random() * W,
-                y: (Math.random() * (H / 2)) + (H / 2),
+                y: Math.random() * H,
                 speed: Math.random() * 10 + 25,
                 color: 'rgba(255, 255, 255, 1)',
                 img: Math.floor(Math.random() * (images.length - 1)),
