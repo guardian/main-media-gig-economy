@@ -2,7 +2,7 @@ var $ = require('../vendor/jquery.js');
 
 var canvas, W, H, rainHandler, ctx,
     img,
-    maxDrops = 20,
+    maxDrops = 0,
     drops = [],
     angle = 68;
 
@@ -15,6 +15,7 @@ module.exports = {
     bindings: function() {
         $(window).resize(function() {
             this.setCanvasSize();
+            this.generateInitialDrops();
         }.bind(this));
     },
 
@@ -23,6 +24,12 @@ module.exports = {
         H = window.innerHeight;
         canvas.width = W;
         canvas.height = H;
+
+        if (W > 700) {
+            maxDrops = 50
+        } else {
+            maxDrops = 20
+        }
     },
 
     createCanvas: function() {
@@ -30,20 +37,24 @@ module.exports = {
         this.setCanvasSize();
         ctx = canvas.getContext('2d');
 
-        for (var i = 0; i < maxDrops; i++) {
-            drops.push({
-                x: Math.random() * W - 120, // 120 to compensate for the gap on the left
-                y: Math.random() * H,
-                speed: Math.random() * 10 + 30,
-                color: 'rgba(255, 255, 255, 1)',
-            });
-        }
+        this.generateInitialDrops();
 
         img = new Image();
         img.onload = function() {
             this.startRaining();
         }.bind(this);
         img.src = '@@assetPath@@/assets/images/drop-1.png';
+    },
+
+    generateInitialDrops: function() {
+        for (var i = 0; i < maxDrops; i++) {
+            drops.push({
+                x: Math.random() * (W * 2) - W,
+                y: Math.random() * H,
+                speed: Math.random() * 10 + 30,
+                color: 'rgba(255, 255, 255, 1)',
+            });
+        }
     },
 
     startRaining: function() {
@@ -72,8 +83,8 @@ module.exports = {
             drop.x = drop.x + drop.speed * Math.cos(angleRad);
             drop.y = drop.y + drop.speed * Math.sin(angleRad);
 
-            if (drop.y > H || drop.x > W) {
-                drops[i].x = Math.random() * W;
+            if (drop.x > W || drop.y > H) {
+                drops[i].x = Math.random() * (W * 2) - W;
                 drops[i].y = -148;
             }
         }
