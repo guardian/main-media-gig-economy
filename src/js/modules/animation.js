@@ -1,13 +1,19 @@
 var $ = require('../vendor/jquery.js');
 
 var canvas, W, H, rainHandler, ctx,
-    img,
     maxDrops = 0,
     drops = [],
     floorImg,
     maxFloorDrops = 30,
     floorDrops = [],
     angle = 68;
+
+var images = ['@@assetPath@@/assets/images/drop-1.png',
+              '@@assetPath@@/assets/images/drop-2.png',
+              '@@assetPath@@/assets/images/drop-3.png',
+              '@@assetPath@@/assets/images/floor-drop.png'];
+
+var imgs = {};
 
 module.exports = {
     init: function() {
@@ -42,17 +48,29 @@ module.exports = {
 
         this.generateInitialDrops();
 
-        dropImg = new Image();
-        dropImg.onload = function() {
+        this.loadImages(function() {
             this.startRaining();
-        }.bind(this);
-        dropImg.src = '@@assetPath@@/assets/images/drop-1.png';
+        }.bind(this));
+    },
 
-        floorImg = new Image();
-        floorImg.onload = function() {
-            this.startRaining();
-        }.bind(this);
-        floorImg.src = '@@assetPath@@/assets/images/floor-drop.png';
+    loadImages: function(onDone) {
+        var count = images.length;
+
+        var onImageLoad = function () {
+            count--;
+            if (0 == count) {
+                onDone();
+            }
+        }
+
+        for (var i = 0; i < count; i++) {
+            imgs[i] = new Image();
+            imgs[i].onload = function() {
+                onImageLoad();
+            }.bind(this);
+            imgs[i].src = images[i];
+
+        }
     },
 
     generateInitialDrops: function() {
@@ -62,26 +80,27 @@ module.exports = {
                 y: (Math.random() * (H / 2)) + (H / 2),
                 speed: Math.random() * 10 + 30,
                 color: 'rgba(255, 255, 255, 1)',
+                img: Math.floor(Math.random() * (images.length - 1)),
+                angle: (Math.random() * 6) + (angle - 3)
             });
         }
 
         for (var i = 0; i < maxFloorDrops; i++) {
             floorDrops.push({
-                x: Math.random() * W - (W / 2),
-                y: Math.random() * H,
+                x: Math.random() * W,
+                y: (Math.random() * (H / 2)) + (H / 2),
                 w: 20,
                 h: 3,
                 alpha: 1,
-                speed: Math.random() * 0.05
-            })
-            console.log(floorDrops[i].speed);
+                speed: Math.random() * 0.05,
+            });
         }
     },
 
     startRaining: function() {
         rainHandler = setInterval(function() {
             this.draw();
-        }.bind(this), 30);
+        }.bind(this), 15);
     },
 
     draw: function() {
@@ -89,13 +108,13 @@ module.exports = {
 
         for (var i = 0; i < maxDrops; i++) {
             var drop = drops[i];
-            ctx.drawImage(dropImg, drop.x, drop.y, 66, 148);
+            ctx.drawImage(imgs[drop.img], drop.x, drop.y, imgs[drop.img].width / 2, imgs[drop.img].height / 2);
         }
 
         for (var i = 0; i < maxFloorDrops; i++) {
             var drop = floorDrops[i];
             ctx.globalAlpha = drop.alpha;
-            ctx.drawImage(floorImg, drop.x, drop.y, drop.w, drop.h);
+            ctx.drawImage(imgs[images.length - 1], drop.x, drop.y, drop.w, drop.h);
             ctx.globalAlpha = 1;
         }
 
@@ -106,7 +125,7 @@ module.exports = {
         for (var i = 0; i < maxDrops; i++) {
             var drop = drops[i];
 
-            var angleRad = angle * (Math.PI/180);
+            var angleRad = drop.angle * (Math.PI/180);
 
             drop.x = drop.x + drop.speed * Math.cos(angleRad);
             drop.y = drop.y + drop.speed * Math.sin(angleRad);
@@ -128,7 +147,7 @@ module.exports = {
             drop.alpha = drop.alpha < 0.1 ? 0 : drop.alpha - (drop.speed);
 
 
-            if (floorImg.width / 2 < drop.w) {
+            if (imgs[images.length - 1].width / 2 < drop.w) {
                 floorDrops[i].x = Math.random() * W;
                 floorDrops[i].y = (Math.random() * (H / 2)) + (H / 2);
                 floorDrops[i].w = 20;
