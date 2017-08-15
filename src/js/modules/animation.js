@@ -78,7 +78,7 @@ module.exports = {
             drops.push({
                 x: Math.random() * W,
                 y: (Math.random() * (H / 2)) + (H / 2),
-                speed: Math.random() * 10 + 30,
+                speed: Math.random() * 10 + 25,
                 color: 'rgba(255, 255, 255, 1)',
                 img: Math.floor(Math.random() * (images.length - 1)),
                 angle: (Math.random() * 6) + (angle - 3)
@@ -147,7 +147,7 @@ module.exports = {
             drop.alpha = drop.alpha < 0.1 ? 0 : drop.alpha - (drop.speed);
 
 
-            if (imgs[images.length - 1].width / 2 < drop.w) {
+            if (imgs[images.length - 1].width / 1.5 < drop.w) {
                 floorDrops[i].x = Math.random() * W;
                 floorDrops[i].y = (Math.random() * (H / 2)) + (H / 2);
                 floorDrops[i].w = 20;
