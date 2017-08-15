@@ -1,0 +1,11 @@
+{
+    "local": {
+        "url": "http://localhost",
+        "port": 8080
+    },
+    "remote": {
+        "url": "https://interactive.guim.co.uk",
+        "path": "atoms/2017/07/preppers",
+        "bucket": "gdn-cdn"
+    }
+}
